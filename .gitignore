@@ -1,0 +1,7 @@
+node_modules/
+turnos.jsonl
+*.log
+ERROR.txt
+shot-*.png
+pw-test.mjs
+.wrangler/

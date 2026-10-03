@@ -1,0 +1,31 @@
+<div class="lbl"><i style="background:var(--ok)"></i>Qué aprendimos</div>
+<p><span class="hh f">HECHO</span> = medido en esta corrida (4.110 llamadas, US$ 0,21 en total). <span class="hh h">HIPÓTESIS</span> = nuestra lectura de por qué pasó.</p>
+
+<h3>1. Lo que más pesa es el state, no la primitiva</h3>
+<p><span class="hh f">HECHO</span> Con state C, las tres primitivas jugaron el 100% de los turnos no triviales de forma óptima y no perdieron ninguna de las 50 partidas contra minimax. Con state A, casi no se distinguen del azar: 23–25% de óptimas en turnos difíciles con Choice y Score (el azar, 37%) y 0–2% de partidas sin perder contra minimax.</p>
+<p><span class="hh h">HIPÓTESIS</span> En A, Jev tendría que cruzar listas de casillas con las 8 líneas para ver quién amenaza. Es una cuenta de varios pasos, y Jev no las hace. Pasó lo mismo en el buscaminas.</p>
+
+<h3>2. ¿Cuánto aporta Jev cuando el código ya calculó?</h3>
+<ul>
+<li><span class="hh f">HECHO</span> <b>Con todos los hechos (C), Jev aporta cero sobre una regla fija</b>: la regla, sin IA y con los mismos hechos, también hace 100% de jugadas óptimas y no pierde nunca, a US$ 0.</li>
+<li><span class="hh f">HECHO</span> <b>Con solo "gana ya / bloquea" (B)</b>, en los turnos difíciles (sin nada para ganar ni bloquear) Jev eligió la óptima el 79–91% de las veces, contra 37% del azar. Es la parte que el código no le resolvió: evitar la doble amenaza del rival.</li>
+<li><span class="hh f">HECHO</span> En Choice con state B, cuando Jev respondió con p ≥ 0,6 acertó 174 de 174 turnos. Con p &lt; 0,6 acertó 14 de 25. Su probabilidad avisa cuándo duda.</li>
+<li><span class="hh h">HIPÓTESIS</span> Jev aporta donde no hay regla escrita y conviene acotarlo: si p &lt; 0,6, que decida el código (o un LLM que razone). En el ta-te-ti la regla existe y es barata, así que acá Jev no hace falta. Sirve como laboratorio.</li>
+</ul>
+
+<h3>3. ¿Qué primitiva rindió mejor?</h3>
+<ul>
+<li><span class="hh f">HECHO</span> Empate en eficacia con state C. Con state B en turnos difíciles: Score 91% (71/78), Choice 85% (64/75), Noul 79% (62/78). Con unos 78 turnos por fila, esas diferencias son chicas y pueden ser ruido.</li>
+<li><span class="hh f">HECHO</span> Costo por partida con state C: Choice US$ 0,00017, Noul US$ 0,00023, Score US$ 0,00030. Las tres hacen 1 llamada por turno (~300 ms). Score y Noul mandan una pregunta por casilla y Choice una sola.</li>
+<li><span class="hh f">HECHO</span> En los turnos difíciles con state B, Noul dio probabilidades planas (por ejemplo 0,26–0,32 en todas las casillas).</li>
+<li><span class="hh h">HIPÓTESIS</span> "¿Es la mejor jugada?" es una comparación entre casillas, y Noul las juzga una por una sin ver las demás: por eso las probabilidades salen planas. Choice compara de una vez y es la más barata. Es la recomendada para "qué hago ahora", igual que en el buscaminas.</li>
+</ul>
+
+<h3>4. Qué pedirle a un LLM la próxima vez, desde el principio</h3>
+<ol>
+<li>"Separá qué parte de la decisión tiene respuesta exacta y armá primero la <b>regla sin IA</b>. Es el control y puede que alcance."</li>
+<li>"Diseñá el state en <b>niveles</b> (nada / hechos inmediatos / hechos completos) para medir cuánto aporta el modelo y cuánto el código."</li>
+<li>"Calificá cada decisión contra un oráculo (aquí minimax), no solo el resultado final, y <b>separá turnos fáciles, difíciles y triviales</b>."</li>
+<li>"Guardá la probabilidad y medí la precisión por encima y por debajo de un umbral: eso define cuándo el modelo decide solo y cuándo escala."</li>
+<li>"Hacé un piloto que mida el costo real antes de la corrida grande, con un tope automático de gasto."</li>
+</ol>

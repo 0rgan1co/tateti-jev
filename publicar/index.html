@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ta-te-ti × Jev</title>
+<meta name="description" content="El código calcula, Jev decide: un ta-te-ti para comparar Choice, Score y Noul.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0c;--panel:#111113;--line:#26262a;--txt:#ececee;--mut:#8b8b92;--dim:#5c5c63;--ok:#b6f36a;--vio:#b78cff;--jev:#ffd25e;--bad:#ff6b6b;--cell:#1b1b1f;--cellr:#2a2a30;
+--mono:'JetBrains Mono',ui-monospace,monospace;--sans:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans)}
+a{color:var(--ok)}button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header.wrap{text-align:center;padding:64px 16px 40px;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(34px,6vw,60px);font-weight:600;letter-spacing:-.03em;line-height:1.02;margin:0}
+h1 span{display:block;color:var(--mut)}
+header p{color:var(--mut);margin:18px auto 0;line-height:1.6;font-size:15px;max-width:640px}
+section{padding:28px 0;border-bottom:1px solid var(--line)}
+.lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:0 0 16px}
+.lbl i{width:8px;height:8px;display:inline-block}
+.note{font-family:var(--mono);font-size:12px;color:var(--mut);line-height:1.6}
+.btn{border:1px solid var(--line);background:#16161a;border-radius:4px;padding:9px 14px;font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.btn:hover{border-color:#3a3a40}.btn:disabled{opacity:.4;cursor:not-allowed}
+.big{width:100%;display:flex;justify-content:center;align-items:center;background:#7b35d8;border:0;border-radius:4px;padding:18px;color:#fff;font-size:15px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+.big:hover{background:#8a45e8}.big:disabled{opacity:.5;cursor:not-allowed}
+.cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:18px}
+.grp{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:12px}
+.grp h4{margin:0 0 10px;font-family:var(--mono);font-size:11px;color:var(--mut);font-weight:400;text-transform:uppercase;letter-spacing:.05em}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:64px;border:1px solid var(--line);background:#16161a;border-radius:4px;padding:9px 8px;cursor:pointer;font-size:13px}
+.seg button.on{border-color:var(--jev);color:var(--jev);background:#1c1a12}
+.grp small{display:block;color:var(--dim);font-size:11.5px;margin-top:8px;line-height:1.45;min-height:32px}
+.juego{display:grid;grid-template-columns:minmax(260px,380px) 1fr;gap:18px;align-items:start}
+@media (max-width:820px){.juego{grid-template-columns:1fr}}
+.pn{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pn-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pn-h b{font-weight:600;font-size:14px}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 6px;border-radius:3px;background:#1e1e22;color:var(--mut);white-space:nowrap}
+.tag.ok{color:#0b0b0c;background:var(--ok)}.tag.bad{background:#3a1d1d;color:var(--bad)}.tag.run{color:var(--jev)}
+.bd{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;aspect-ratio:1;width:100%}
+.c{background:var(--cell);border-radius:6px;display:grid;place-items:center;font-size:clamp(34px,9vw,64px);font-weight:600;border:0;cursor:default;position:relative;color:var(--txt)}
+.c.lib.mia{cursor:pointer}.c.lib.mia:hover{background:var(--cellr)}
+.c .nm{position:absolute;left:6px;top:4px;font-family:var(--mono);font-size:10px;color:var(--dim);font-weight:400}
+.c.X{color:#7fb2ff}.c.O{color:#ff8a8a}.c.j{box-shadow:inset 0 0 0 2px var(--jev)}.c.win{background:#1f2a12}
+.c.new{animation:p .5s}@keyframes p{from{filter:brightness(2.2)}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-family:var(--mono);font-size:11px;color:var(--mut)}
+.stats span b{display:block;color:var(--txt);font-size:13px;font-weight:500}
+.msg{font-family:var(--mono);font-size:12px;color:var(--mut);min-height:18px}
+.why{display:flex;flex-direction:column;gap:8px;max-height:640px;overflow:auto}
+.t{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#0f0f12;font-size:13px;line-height:1.55}
+.t.jev{border-left:3px solid var(--jev)}
+.t .h{display:flex;justify-content:space-between;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--mut);margin-bottom:4px;flex-wrap:wrap}
+.t .cod{color:#cfcfd4}.t .dec{color:var(--jev)}.t .ver{font-family:var(--mono);font-size:11px}
+.t .ver.ok{color:var(--ok)}.t .ver.bad{color:var(--bad)}.t .ver.mut{color:var(--mut)}
+.t button.ins{font-family:var(--mono);font-size:10px;padding:3px 6px;border:1px solid var(--jev);color:var(--jev);background:none;border-radius:3px;cursor:pointer}
+.legend{font-family:var(--mono);font-size:11px;color:var(--mut);display:flex;gap:16px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+table.res{width:100%;border-collapse:collapse;font-size:13px}
+table.res th{font-family:var(--mono);font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:400;text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.res th[title]{text-decoration:underline dotted;cursor:help}
+table.res td{padding:9px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.res tr.ctrl td{color:var(--mut)}table.res tr.sep td{border-bottom:1px solid #3a3a40}
+table.res td .k{font-family:var(--mono);font-size:11px;color:var(--mut)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.barra{display:inline-block;height:6px;border-radius:3px;background:var(--ok);vertical-align:middle;margin-right:6px}
+.acc{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.acc select{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:13px}
+.exp{font-size:14px;line-height:1.65;color:#cfcfd4}
+.exp h3{font-size:15px;margin:20px 0 6px;color:var(--txt)}
+.exp p{margin:6px 0}.exp ul{margin:6px 0;padding-left:20px}.exp li{margin:4px 0}
+.exp code,.k{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.exp .clave{border-left:3px solid var(--jev);padding:8px 12px;background:#17171b;border-radius:0 4px 4px 0;margin:10px 0}
+.hh{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;margin-right:6px}
+.hh.f{background:#1f2a12;color:var(--ok)}.hh.h{background:#2a2412;color:var(--jev)}
+.prim{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:12px 0}
+.prim div{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--panel)}
+.prim b{color:var(--jev);font-family:var(--mono);font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(8,8,10,.82);display:none;place-items:center;z-index:46;padding:16px}.modal.on{display:grid}
+.modal .caja{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;width:min(1180px,100%);max-height:92vh;overflow:auto}
+.insgrid{display:grid;grid-template-columns:1fr 1.1fr;gap:18px}@media (max-width:820px){.insgrid{grid-template-columns:1fr}}
+.insh{font-size:14px;margin:6px 0 8px;display:flex;gap:10px;align-items:baseline}.insh .k{font-size:11px}
+.modal pre{background:#0d0d10;border:1px solid var(--line);border-radius:6px;padding:12px;font-family:var(--mono);font-size:11.5px;line-height:1.5;color:#cfcfd4;white-space:pre-wrap;word-break:break-word;max-height:38vh;overflow:auto;margin:0 0 12px}
+.opt{border-bottom:1px solid var(--line);padding:9px 4px;display:grid;grid-template-columns:1fr 150px 70px;gap:12px;align-items:center}
+.opt .o{font-family:var(--mono);font-size:12px}.opt .o small{display:block;color:var(--mut);font-family:var(--sans);font-size:11.5px;margin-top:3px;white-space:normal}
+.opt .pct{font-size:14px;font-weight:600;text-align:right}
+.bar{height:3px;background:#2a2a30;border-radius:2px;position:relative}.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--ok)}
+.opt.win{background:#16190f}.opt.win .o{color:var(--ok)}
+.err{color:var(--bad);font-family:var(--mono);font-size:12px}
+footer.wrap{padding:28px 16px 60px;color:var(--dim);font-size:12px;font-family:var(--mono);line-height:1.7}
+@media (max-width:640px){.opt{grid-template-columns:1fr 70px}.opt .bar{display:none}}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1>Una casilla.<span>Tres formas de preguntarle a Jev.</span></h1>
+  <p>Un ta-te-ti para ver el ciclo <b>"el código calcula, Jev decide"</b>. Elegí cómo se le pregunta a Jev (Choice, Score o Noul) y cuántos hechos le calcula el código antes, y mirá qué decide en cada turno y por qué.</p>
+</header>
+
+<main class="wrap">
+<section>
+  <div class="lbl"><i style="background:var(--jev)"></i>01 Configurá la partida</div>
+  <div class="cfg">
+    <div class="grp"><h4>Cómo se le pregunta a Jev</h4><div class="seg" id="sModo">
+      <button data-v="choice" class="on">Choice</button><button data-v="score">Score</button><button data-v="noul">Noul</button></div><small id="dModo"></small></div>
+    <div class="grp"><h4>Qué le calcula el código antes (state)</h4><div class="seg" id="sNivel">
+      <button data-v="A">A · nada</button><button data-v="B">B · inmediato</button><button data-v="C" class="on">C · completo</button></div><small id="dNivel"></small></div>
+    <div class="grp"><h4>Contra quién juega Jev</h4><div class="seg" id="sRival">
+      <button data-v="humano" class="on">Vos</button><button data-v="azar">Azar</button><button data-v="minimax">Minimax</button></div><small id="dRival"></small></div>
+    <div class="grp"><h4>Jev juega con</h4><div class="seg" id="sFicha">
+      <button data-v="X">X (empieza)</button><button data-v="O" class="on">O</button></div><small>X siempre mueve primero.</small></div>
+  </div>
+  <button class="big" id="bJugar">Jugar</button>
+  <p class="note" id="estadoCuenta"></p>
+</section>
+
+<section id="secJuego">
+  <div class="lbl"><i style="background:var(--ok)"></i>02 Partida <span class="k" id="lblPartida"></span></div>
+  <div class="juego">
+    <div class="pn">
+      <div class="pn-h"><b id="tTitulo">Sin partida</b><span class="tag" id="tEstado">—</span></div>
+      <div class="bd" id="bd"></div>
+      <div class="msg" id="msg">Configurá y apretá Jugar.</div>
+      <div class="stats"><span>Llamadas<b id="sLl">0</b></span><span>Costo<b id="sCo">US$ 0</b></span><span>ms prom.<b id="sMs">—</b></span><span>Óptimas<b id="sOp">—</b></span></div>
+      <div class="legend"><span><i style="background:var(--jev)"></i>jugada de Jev</span><span><i style="background:var(--ok)"></i>óptima según minimax</span></div>
+    </div>
+    <div class="pn">
+      <div class="pn-h"><b>¿Por qué pasó?</b><span class="k">qué calculó el código · qué decidió Jev · qué diría minimax</span></div>
+      <div class="why" id="why"><p class="note">Cada turno aparece acá.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="lbl"><i style="background:var(--vio)"></i>03 Comparar modos</div>
+  <p class="note" id="resMeta">Cargando resultados grabados…</p>
+  <div class="scroll"><table class="res" id="tRes"></table></div>
+  <div class="acc">
+    <select id="selEj"></select><button class="btn" id="bEj">Ver partida de ejemplo</button>
+    <span style="flex:1"></span>
+    <button class="btn" id="bVivo">Correr en vivo (10 partidas por modo)</button>
+  </div>
+  <div id="vivo"></div>
+</section>
+
+<section class="exp" id="aprendizajes"></section>
+
+<section class="exp">
+  <div class="lbl"><i style="background:var(--mut)"></i>04 ¿Cómo funciona?</div>
+  <p>Jev es un modelo "System One" de TypeSafe: no escribe texto, responde preguntas con un formato fijo que el programa usa directo, y cada respuesta trae sus probabilidades (70–500 ms, centavos por miles de decisiones). <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Presentación de Jev</a> · <a href="https://docs.typesafe.ai" target="_blank" rel="noopener">Documentación</a></p>
+  <h3>Las tres primitivas, aplicadas a la misma decisión</h3>
+  <div class="prim">
+    <div><b>Choice</b><p>"¿Qué casilla jugás?" El código arma una opción por casilla libre, con sus hechos, y Jev elige una. <b style="color:var(--mut)">1 pregunta por turno.</b></p></div>
+    <div><b>Score</b><p>"¿Qué tan buena es cada casilla, de 0 a 3?" Jev reparte probabilidad entre los niveles; el código calcula el valor esperado y juega el más alto.</p></div>
+    <div><b>Noul</b><p>"¿Jugar en esta casilla es la mejor jugada?" Un sí/no por casilla; el código juega la de mayor probabilidad de "sí".</p></div>
+  </div>
+  <h3>Reparto del trabajo</h3>
+  <ul>
+    <li><b>Código</b>: valida jugadas, lista casillas libres y calcula por casilla: <code>gana_ya</code>, <code>bloquea_victoria_rival</code>, <code>deja_ganar_al_rival</code>, <code>arma_doble_amenaza</code>, <code>permite_doble_amenaza_rival</code> (mira dos jugadas adelante), <code>crea_amenaza</code>, <code>posicion</code>, <code>lineas_abiertas</code>.</li>
+    <li><b>Jev</b>: juzga y elige. Nunca ve el tablero dibujado.</li>
+    <li><b>State A</b>: solo de quién es cada casilla y la lista de líneas ganadoras (Jev tendría que hacer las cuentas). <b>B</b>: además "gana ya" y "bloquea". <b>C</b>: todos los hechos.</li>
+  </ul>
+  <h3>Cómo se mide</h3>
+  <ul>
+    <li>50 partidas por configuración contra el azar y 50 contra minimax (perfecto, elige al azar entre sus jugadas óptimas). Jev juega X en la mitad y O en la otra mitad.</li>
+    <li>Cada jugada de Jev se compara con las óptimas de minimax. Se separan turnos <b>fáciles</b> (hay para ganar o bloquear), <b>difíciles</b> (no hay, pero alguna jugada pierde) y <b>triviales</b> (cualquier jugada da lo mismo; no cuentan).</li>
+    <li>Controles sin IA en el lugar de Jev: azar, minimax y una regla fija con los mismos hechos del state C.</li>
+    <li>Variabilidad: 20 posiciones difíciles, 3 veces cada una por configuración.</li>
+  </ul>
+</section>
+</main>
+<footer class="wrap">Costos: los informa OpenRouter en cada llamada (usage.cost). Jev = typesafe/jev-1.13 vía /api/alpha/decisions. · Hermano de <a href="https://arena-buscaminas.pages.dev">Arena Buscaminas</a></footer>
+
+<div class="modal" id="insModal"><div class="caja">
+  <div class="pn-h"><b id="insTit">Ver a Jev</b><button class="btn" data-cerrar>Cerrar</button></div>
+  <div class="insgrid">
+    <div><div class="insh">State <span class="k">lo que el código le pasa a Jev</span></div><pre id="insSt"></pre>
+         <div class="insh">Preguntas <span class="k">primitiva e instrucciones</span></div><pre id="insQ"></pre></div>
+    <div><div class="insh">Respuesta de Jev <span class="k" id="insMeta"></span></div><div id="insA"></div></div>
+  </div>
+</div></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
